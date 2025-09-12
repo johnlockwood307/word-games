@@ -21,7 +21,6 @@
     "paths": {
       "@/*": ["./*"]
     },
-    // "typeRoots": ["./node_modules/@types", "./typings"]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "api/index.js"],
   "exclude": ["node_modules"]
