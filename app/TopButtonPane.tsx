@@ -7,6 +7,8 @@ type TopButtonPaneProps = {
 }
 
 export default function TopButtonPane(props: TopButtonPaneProps) {
+    
+    
     return (
         <div className={styles.buttonPane}>
             {/* <button className={styles.button}></button>
@@ -14,7 +16,9 @@ export default function TopButtonPane(props: TopButtonPaneProps) {
             <button className={styles.button}>How to Play</button> */}
 
             {props.panes.map((pane) => (
-                <button key={pane} className={styles.button} onClick={() => props.changePane(pane)}>
+                <button key={pane}
+                    className={`${styles.button} ${props.curPane == pane ? styles.selected : ""}`}
+                    onClick={() => props.changePane(pane)}>
                     {pane}
                 </button>
             ))}

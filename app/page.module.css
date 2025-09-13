@@ -3,17 +3,28 @@
     flex-direction: column;
 }
 
+.body {
+    background-color: #545454;
+    border-radius: 10px;
+    padding: 20px;
+}
+
 .title {
     align-self: center;
     font-size: 40px;
     padding: 10px;
 }
 
+.playPane {
+    align-self: center;
+    width: 500px;
+}
+
 .leaderboardPane {
-    display: flex;
-    flex-direction: row;
-    gap: 100px;
-    padding-top: 20px;
-    padding-bottom: 20px;
-    margin: auto;
+    align-self: center;
+}
+
+.howToPlayPane {
+    align-self: center;
+    width: 500px;
 }

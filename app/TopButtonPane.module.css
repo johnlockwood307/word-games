@@ -1,7 +1,7 @@
 .buttonPane {
     display: flex;
     flex-direction: row;
-    gap: 50px;
+    gap: 40px;
     padding-top: 20px;
     padding-bottom: 20px;
     margin: auto;
@@ -10,7 +10,11 @@
 .button {
     color: white;
     background-color: blue;
-    width: 150px;
+    width: 130px;
     height: 30px;
     border-radius: 10px;
+}
+
+.selected {
+    border: 3px solid white;
 }
