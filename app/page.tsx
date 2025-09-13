@@ -1,46 +1,51 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
-type WordDoc = {
-    id: string;
-    word: string;
-}
+import { LeaderboardTable, LeaderboardDoc } from "./LeaderboardTable";
+import styles from "./page.module.css";
+import TopButtonPane from "./TopButtonPane";
 
 export default function Home() {
-    const [words, setWords] = useState<Array<WordDoc>>([]);
+    const [scoreLeaderboard, setScoreLeaderboard] = useState<Array<LeaderboardDoc>>([]);
+    const [recentLeaderboard, setRecentLeaderboard] = useState<Array<LeaderboardDoc>>([]);
 
-    async function getWords() {
-        const res = await fetch("/api/dictionary", {
-            method: "GET",
-        });
+    const panes = ["Play", "Leaderboard", "How to Play"];
+    const [curPane, setCurPane] = useState(panes[0]);
 
-        const resJSON = await res.json();
-        setWords(resJSON);
-    }
-
+    // fetch leaderboard once on startup, sort into high scores and recent scores
     useEffect(() => {
-        getWords();
+        async function getLeaderboardEntries() {
+            const res = await fetch("/api/anagrams-leaderboard", {
+                method: "GET",
+            });
+
+            const resJSON = await res.json();
+            setScoreLeaderboard(resJSON.sort((entry1: LeaderboardDoc, entry2: LeaderboardDoc) => (
+                entry2.score - entry1.score
+            )).slice(0, 10));
+            setRecentLeaderboard(resJSON.sort((entry1: LeaderboardDoc, entry2: LeaderboardDoc) => (
+                entry2.timestamp - entry1.timestamp
+            )).slice(0, 10));
+            console.log(JSON.stringify(resJSON));
+        }
+
+        getLeaderboardEntries();
     }, []);
 
+
+    // wrapper for setState, passed as props to TopButtonPane
+    function changePane(pane: string) {
+        setCurPane(pane);
+    }
+
+
     return (
-    <div>
-        <h1>hello world...</h1>
-        <table>
-            <thead>
-                <tr>
-                    <th>Word</th>
-                </tr>
-            </thead>
-            <tbody>
-                {
-                    words.map((word, index) =>
-                        <tr key={index}>
-                            <td>{word.word}</td>
-                        </tr>
-                    )
-                }
-            </tbody>
-        </table>
+    <div className={styles.page}>
+        <h1 className={styles.title}>Anagrams</h1>
+        <TopButtonPane panes={panes} curPane={curPane} changePane={changePane} />
+        <div className={styles.leaderboardPane}>
+            <LeaderboardTable tableTitle="High Scores" leaderboard={scoreLeaderboard}/>
+            <LeaderboardTable tableTitle="Recent Scores" leaderboard={recentLeaderboard}/>
+        </div>
     </div>);
 }

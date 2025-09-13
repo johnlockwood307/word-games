@@ -1,13 +1,11 @@
-// import serverless from "serverless-http";
-
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../util/FirebaseInit.js";
 
 
 
 export async function GET() {
-    console.log("getting dictionary words");
-    const collectionRef = collection(db, "collins-scrabble-words");
+    console.log("getting anagrams leaderboard entries");
+    const collectionRef = collection(db, "anagrams-leaderboard");
 	const collectionSnap = await getDocs(collectionRef)
 	const docs = []
     
@@ -21,5 +19,3 @@ export async function GET() {
     });
 }
 
-
-// const handler = serverless(app);

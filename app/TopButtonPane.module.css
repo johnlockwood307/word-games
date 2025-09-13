@@ -1,0 +1,16 @@
+.buttonPane {
+    display: flex;
+    flex-direction: row;
+    gap: 50px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin: auto;
+}
+
+.button {
+    color: white;
+    background-color: blue;
+    width: 150px;
+    height: 30px;
+    border-radius: 10px;
+}

@@ -1,0 +1,19 @@
+.page {
+    display: flex;
+    flex-direction: column;
+}
+
+.title {
+    align-self: center;
+    font-size: 40px;
+    padding: 10px;
+}
+
+.leaderboardPane {
+    display: flex;
+    flex-direction: row;
+    gap: 100px;
+    padding-top: 20px;
+    padding-bottom: 20px;
+    margin: auto;
+}
