@@ -1,4 +1,4 @@
-import styles from "./PreGame.module.css";
+import styles from "./style/PreGame.module.css";
 
 type PreGameProps = {
     setNickname: React.Dispatch<React.SetStateAction<string>>;

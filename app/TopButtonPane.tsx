@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import styles from "./TopButtonPane.module.css";
+import styles from "./style/TopButtonPane.module.css";
 
 type TopButtonPaneProps = {
     panes: Array<string>;

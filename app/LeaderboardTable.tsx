@@ -1,4 +1,4 @@
-import styles from "./LeaderboardTable.module.css";
+import styles from "./style/LeaderboardTable.module.css";
 
 export type LeaderboardDoc = {
     id: string;
@@ -11,9 +11,20 @@ export type LeaderboardDoc = {
 type LeaderboardProps = {
     leaderboard: Array<LeaderboardDoc>;
     tableTitle: string;
+    recentLeaderboardEntry: LeaderboardDoc | null;
 }
 
 export function LeaderboardTable(props: LeaderboardProps) {
+    function isEntryRecent(entry: LeaderboardDoc) {
+        // null check
+        if (props.recentLeaderboardEntry) {
+            return props.recentLeaderboardEntry.timestamp == entry.timestamp &&
+                props.recentLeaderboardEntry.nickname == entry.nickname &&
+                props.recentLeaderboardEntry.letters == entry.letters &&
+                props.recentLeaderboardEntry.score == entry.score;
+        }
+    }
+    
     return (
         <div>
             <h2 className={styles.tableTitle}>{props.tableTitle}</h2>
@@ -28,7 +39,9 @@ export function LeaderboardTable(props: LeaderboardProps) {
                 <tbody>
                     {
                         props.leaderboard.map((entry, index) =>
-                            <tr key={index} className={styles.row}>
+                            <tr key={index} 
+                                className={`${styles.row} ${isEntryRecent(entry) ? styles.highlightedRow : ""}`}
+                            >
                                 <td>{entry.nickname}</td>
                                 <td>{entry.score}</td>
                                 <td>{entry.letters}</td>

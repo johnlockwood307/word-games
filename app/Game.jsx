@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import Countdown from "react-countdown";
-import styles from "./Game.module.css";
-import { wordValid } from "./gameUtils";
+import styles from "./style/Game.module.css";
+import { wordValid, getLetters } from "./gameUtils";
 
 // scores for word of each length
 const scoreMap = new Map([
@@ -10,10 +10,6 @@ const scoreMap = new Map([
     [5, 1200],
     [6, 2000]
 ]);
-
-function getLetters() {
-    return ["S", "L", "T", "A", "S", "E"];
-}
 
 export default function GamePane(gProps) {
     const buffer = 25;
@@ -54,7 +50,6 @@ export default function GamePane(gProps) {
         setTotalPoints(0);
         setSubmittedWords(new Set());
     }
-
 
     // when letter button is clicked, append to or remove from activeButtons
     function handleLetterClick(index) {
@@ -126,12 +121,21 @@ export default function GamePane(gProps) {
 
                     const resJSON = await res.json();
                     console.log("successfully posted: ", resJSON);
+                    gProps.setRecentLeaderboardEntry({
+                        nickname: entry.nickname,
+                        score: entry.score,
+                        letters: entry.letters,
+                        timestamp: entry.timestamp,
+                        id: resJSON.id,
+                    });
                 } catch (error) {
                     console.error("error submitting leaderboard entry: ", error);
                 }
             }
 
             postLeaderboardEntry();
+        } else {
+            gProps.setRecentLeaderboardEntry(null);
         }
     }
 

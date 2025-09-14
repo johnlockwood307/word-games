@@ -71,3 +71,10 @@ export function wordValid(trie, word) {
 
     return isValid;
 }
+
+/**
+ * 
+ */
+export function getLetters() {
+    return ["S", "L", "T", "A", "S", "E"];
+}

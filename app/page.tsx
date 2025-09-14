@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { LeaderboardTable, LeaderboardDoc } from "./LeaderboardTable";
-import styles from "./page.module.css";
+import styles from "./style/page.module.css";
 import TopButtonPane from "./TopButtonPane";
 import HowToPlay from "./HowToPlay";
 import PreGamePane from "./PreGame";
@@ -12,6 +12,7 @@ import { buildTrie } from "./gameUtils";
 export default function Home() {
     const [scoreLeaderboard, setScoreLeaderboard] = useState<Array<LeaderboardDoc>>([]);
     const [recentLeaderboard, setRecentLeaderboard] = useState<Array<LeaderboardDoc>>([]);
+    const [recentLeaderboardEntry, setRecentLeaderboardEntry] = useState<LeaderboardDoc | null>(null);
 
     const panes = ["Play", "Leaderboard", "How to Play"];
     const [curPane, setCurPane] = useState(panes[0]);
@@ -78,15 +79,15 @@ export default function Home() {
             <PreGamePane setNickname={setNickname} setValidNickname={setValidNickname}
                 setInGame={setInGame} validNickname={validNickname} inGame={inGame} setGameCount={setGameCount}/>
             <GamePane inGame={inGame} setInGame={setInGame} endTime={Date.now() + 60000}
-                trie={trie} gameCount={gameCount} nickname={nickname}/>
+                trie={trie} gameCount={gameCount} nickname={nickname} setRecentLeaderboardEntry={setRecentLeaderboardEntry}/>
         </div>
 
         {/* Leaderboard pane */}
         <div className={`${styles.leaderboardPane} ${styles.body}`} style={{ display: (curPane === "Leaderboard") ? "block" : "none" }}>
-            <LeaderboardTable tableTitle="Recent Scores" leaderboard={recentLeaderboard}/>
+            <LeaderboardTable tableTitle="Recent Scores" leaderboard={recentLeaderboard} recentLeaderboardEntry={recentLeaderboardEntry}/>
             <br/>
             <br/>
-            <LeaderboardTable tableTitle="High Scores" leaderboard={scoreLeaderboard}/>
+            <LeaderboardTable tableTitle="High Scores" leaderboard={scoreLeaderboard} recentLeaderboardEntry={recentLeaderboardEntry}/>
         </div>
 
         {/* How to Play pane */}
