@@ -30,6 +30,10 @@
     align-self: center;
 }
 
+button:focus {
+    outline: none;
+}
+
 .buttonReady {
     color: white;
 }

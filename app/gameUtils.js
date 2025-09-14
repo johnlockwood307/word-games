@@ -1,3 +1,5 @@
+const _ = require('lodash');
+
 /**
  * Node containing a letter within the trie representing all dictionary words
  * Special nodes:
@@ -72,9 +74,59 @@ export function wordValid(trie, word) {
     return isValid;
 }
 
+
+const vowelFreqMap = new Map([
+    ['E', 12],
+    ['A', 9],
+    ['I', 9],
+    ['O', 8],
+    ['U', 4],
+    ['Y', 2],
+]);
+
+const consonantFreqMap = new Map([
+    ['N', 6],
+    ['R', 6],
+    ['T', 6],
+    ['D', 4],
+    ['L', 4],
+    ['S', 4],
+    ['G', 3],
+    ['B', 2],
+    ['C', 2],
+    ['F', 2],
+    ['H', 2],
+    ['M', 2],
+    ['P', 2],
+    ['V', 2],
+    ['W', 2],
+    ['J', 1],
+    ['K', 1],
+    ['Q', 1],
+    ['X', 1],
+    ['Z', 1],
+]);
+
 /**
- * 
+ * Randomly returns two vowels and four consonants, chosen without replacement with the frequencies above, shuffled.
  */
 export function getLetters() {
-    return ["S", "L", "T", "A", "S", "E"];
+    let vowelBag = [];
+    for (const [letter, count] of vowelFreqMap) {
+        const newLetters = new Array(count).fill(letter);
+        vowelBag.push(...newLetters);
+    }
+    vowelBag = _.shuffle(vowelBag);
+    
+    let consonantBag = [];
+    for (const [letter, count] of consonantFreqMap) {
+        const newLetters = new Array(count).fill(letter);
+        consonantBag.push(...newLetters);
+    }
+    consonantBag = _.shuffle(consonantBag);
+    
+    let result = [];
+    result.push(...vowelBag.slice(0, 2));
+    result.push(...consonantBag.slice(0, 4));
+    return _.shuffle(result);
 }

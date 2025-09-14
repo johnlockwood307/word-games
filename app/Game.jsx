@@ -18,11 +18,6 @@ export default function GamePane(gProps) {
     const inactiveY = buffer + 100;
 
     const [letters, setLetters] = useState([]);
-    // get random letters once on startup
-    useEffect(() => {
-        setLetters(getLetters());
-    }, [])
-
     // list of button indices that are active
     const [activeButtons, setActiveButtons] = useState([]);
     // references to button DOM elements
@@ -37,10 +32,11 @@ export default function GamePane(gProps) {
     // gameOver used to stop word submission
     const [gameOver, setGameOver] = useState(false);
     
-    // used to reset countdown (and game) when start is clicked
+    // used to reset countdown and get new letters when start is clicked
     const [countdownKey, setCountdownKey] = useState(0);
     useEffect(() => {
         setCountdownKey(gProps.gameCount);
+        setLetters(getLetters());
     }, [gProps.gameCount]);
 
     function resetGame() {
@@ -62,6 +58,37 @@ export default function GamePane(gProps) {
             // append to activeButtons
             setActiveButtons(prevActiveButtons => [...prevActiveButtons, index]);
         }
+    }
+
+    /* Listen for keyboard input. space/enter => submit,
+       backspace => remove last active letter, letter clicks => letter buttons */
+    const KeyListener = () => {
+        useEffect(() => {
+            const handleKeyDown = (e) => {
+                if (gProps.inGame && !gameOver) {
+                    const key = e.key;
+                    
+                    if (key == "Enter" || key == " ") {
+                        e.preventDefault();
+                        handleSubmit();
+                    } else if (key == "Backspace") {
+                        if (activeButtons.length > 0) {
+                            setActiveButtons(prevActiveButtons => prevActiveButtons.slice(0, -1));
+                        }
+                    } else if (letters.includes(key.toUpperCase())) {
+                        // duplicate letters pose a problem
+                        handleLetterClick(letters.indexOf(key.toUpperCase()));
+                    }
+                }
+            }
+
+            document.addEventListener('keydown', handleKeyDown);
+            return () => {
+                document.removeEventListener('keydown', handleKeyDown);
+            }
+        }, []);
+
+        return <div></div>;
     }
 
     // when submit button is clicked, check if word valid and award points accordingly.
@@ -168,6 +195,7 @@ export default function GamePane(gProps) {
 
     return (
         <div style={{ display: (gProps.inGame) ? "block" : "none" }}>
+            <KeyListener/>
             <div className={styles.countdownDiv}>
                 <Countdown date={gProps.endTime}
                     key={countdownKey}
@@ -199,8 +227,9 @@ export default function GamePane(gProps) {
                         key={i}
                         ref={(el) => (buttonRefs.current[i] = el)}
                         onClick={() => handleLetterClick(i)}
-                        className="absolute px-4 py-2 bg-blue-500 text-white rounded-lg transition-transform duration-150 ease-in-out will-change-transform"
+                        className="absolute w-11 h-10 bg-blue-500 text-white rounded-lg transition-transform duration-150 ease-in-out will-change-transform"
                         style={{transform: `translate(${buffer + cellX * i}px, ${inactiveY}px)`}}
+                        type="button"
                     >
                         {letter}
                     </button>
