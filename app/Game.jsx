@@ -12,7 +12,7 @@ const scoreMap = new Map([
 ]);
 
 function getLetters() {
-    return ["A", "B", "C", "D", "E", "F"];
+    return ["S", "L", "T", "A", "S", "E"];
 }
 
 export default function GamePane(gProps) {
@@ -31,24 +31,35 @@ export default function GamePane(gProps) {
     const [activeButtons, setActiveButtons] = useState([]);
     // references to button DOM elements
     const buttonRefs = useRef([]);
+
     // Display feedback (valid / invalid / too short) about entered words
     const [wordFeedback, setWordFeedback] = useState("Enter some words!");
-    
     // Total points earned by submitting words
     const [totalPoints, setTotalPoints] = useState(0);
     // Submitted words, used to prevent duplicate entry
     const [submittedWords, setSubmittedWords] = useState(new Set());
-
     // gameOver used to stop word submission
     const [gameOver, setGameOver] = useState(false);
+    
+    // used to reset countdown (and game) when start is clicked
+    const [countdownKey, setCountdownKey] = useState(0);
+    useEffect(() => {
+        setCountdownKey(gProps.gameCount);
+    }, [gProps.gameCount]);
+
+    function resetGame() {
+        setGameOver(false);
+        setWordFeedback("Enter some words!");
+        setActiveButtons([]);
+        setTotalPoints(0);
+        setSubmittedWords(new Set());
+    }
 
 
     // when letter button is clicked, append to or remove from activeButtons
     function handleLetterClick(index) {
-        if (gameOver) {
-            return;
-        }
-        
+        if (gameOver) return;
+
         if (activeButtons.includes(index)) {
             // remove from activeButtons
             setActiveButtons(prevActiveButtons => prevActiveButtons.filter(isActive => isActive !== index));
@@ -60,9 +71,7 @@ export default function GamePane(gProps) {
 
     // when submit button is clicked, check if word valid and award points accordingly.
     function handleSubmit() {
-        if (gameOver) {
-            return;
-        }
+        if (gameOver) return;
         
         const word = activeButtons.map((activeButton) => (letters[activeButton]));
         const wordStr = word.join("");
@@ -89,6 +98,50 @@ export default function GamePane(gProps) {
         setActiveButtons([]);
     }
 
+    function handleGameOver() {
+        if (gProps.gameCount == 0) return;
+
+        setGameOver(true);
+        setWordFeedback("Nice job!" + (gProps.nickname ? " Go check out the leaderboard!" : ""));
+        setActiveButtons([]);
+        if (gProps.nickname) {
+            async function postLeaderboardEntry() {
+                const entry = {
+                    nickname: gProps.nickname,
+                    score: totalPoints,
+                    letters: letters.join(''),
+                    timestamp: Date.now()
+                }
+
+                try {
+                    const res = await fetch("/api/anagrams-leaderboard", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", },
+                        body: JSON.stringify(entry),
+                    });
+
+                    if (!res.ok) {
+                        throw new Error(`Server error: ${res.status}`);
+                    }
+
+                    const resJSON = await res.json();
+                    console.log("successfully posted: ", resJSON);
+                } catch (error) {
+                    console.error("error submitting leaderboard entry: ", error);
+                }
+            }
+
+            postLeaderboardEntry();
+        }
+    }
+
+    // go back to PreGame pane, reenabling leaderboard/how to play buttons
+    function handleContinue() {
+        if (gameOver) {
+            gProps.setInGame(false);
+        }
+    }
+
     // get {x,y} position of a button based on its index (position in original letters) or activeIndex (position in the active zone)
     function getPosition(index) {
         const activeIndex = activeButtons.indexOf(index);
@@ -113,11 +166,9 @@ export default function GamePane(gProps) {
         <div style={{ display: (gProps.inGame) ? "block" : "none" }}>
             <div className={styles.countdownDiv}>
                 <Countdown date={gProps.endTime}
-                    onComplete={() => {
-                        setGameOver(true);
-                        setWordFeedback("Nice job!");
-                        setActiveButtons([]);
-                    }}
+                    key={countdownKey}
+                    onStart={() => {resetGame()}}
+                    onComplete={() => {handleGameOver()}}
                     renderer={({ minutes, seconds, completed }) => {
                         if (completed) {
                             return <span className={styles.countdownText}>Time's Up!</span>;
@@ -133,7 +184,7 @@ export default function GamePane(gProps) {
                 <span className={styles.pointsText}>Score: {totalPoints}</span>
             </div>
             <div className={`relative w-full h-50 border ${styles.letterDiv}`}>
-                <button className={`${styles.submitButton} ${gameOver ? styles.buttonUnready : styles.buttonReady}`}
+                <button className={`${styles.button} ${gameOver ? styles.buttonUnready : styles.buttonReady}`}
                     onClick={handleSubmit}
                 >
                     Submit
@@ -154,6 +205,13 @@ export default function GamePane(gProps) {
 
             <div className={styles.feedbackDiv}>
                 {wordFeedback}
+            </div>
+            <div className={styles.feedbackDiv}>
+                <button className={`${styles.button} ${gameOver ? styles.buttonReady : styles.buttonHidden}`}
+                    onClick={handleContinue}
+                >
+                    Continue
+                </button>
             </div>
         </div>
     );

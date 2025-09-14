@@ -20,6 +20,7 @@ export default function Home() {
     const [validNickname, setValidNickname] = useState(true);
 
     const [inGame, setInGame] = useState(false);
+    const [gameCount, setGameCount] = useState<number>(0);
 
     const [trie, setTrie] = useState<any>(null);
 
@@ -38,7 +39,7 @@ export default function Home() {
             })
     }, []);
 
-    // fetch leaderboard once on startup, sort into high scores and recent scores
+    // fetch leaderboard, sort into high scores and recent scores
     useEffect(() => {
         async function getLeaderboardEntries() {
             const res = await fetch("/api/anagrams-leaderboard", {
@@ -54,8 +55,11 @@ export default function Home() {
             )).slice(0, 10));
         }
 
-        getLeaderboardEntries();
-    }, []);
+        // fetch on startup and when inGame set to false (continue clicked)
+        if (!inGame) {
+            getLeaderboardEntries();
+        }
+    }, [inGame]);
 
 
     // wrapper for setState, passed as props to TopButtonPane
@@ -72,16 +76,17 @@ export default function Home() {
         {/* Play pane */}
         <div className={`${styles.playPane} ${styles.body}`} style={{ display: (curPane === "Play") ? "block" : "none" }}>
             <PreGamePane setNickname={setNickname} setValidNickname={setValidNickname}
-                setInGame={setInGame} validNickname={validNickname} inGame={inGame}/>
-            <GamePane inGame={inGame} setInGame={setInGame} endTime={Date.now() + 60000} trie={trie}/>
+                setInGame={setInGame} validNickname={validNickname} inGame={inGame} setGameCount={setGameCount}/>
+            <GamePane inGame={inGame} setInGame={setInGame} endTime={Date.now() + 60000}
+                trie={trie} gameCount={gameCount} nickname={nickname}/>
         </div>
 
         {/* Leaderboard pane */}
         <div className={`${styles.leaderboardPane} ${styles.body}`} style={{ display: (curPane === "Leaderboard") ? "block" : "none" }}>
-            <LeaderboardTable tableTitle="High Scores" leaderboard={scoreLeaderboard}/>
-            <br/>
-            <br/>
             <LeaderboardTable tableTitle="Recent Scores" leaderboard={recentLeaderboard}/>
+            <br/>
+            <br/>
+            <LeaderboardTable tableTitle="High Scores" leaderboard={scoreLeaderboard}/>
         </div>
 
         {/* How to Play pane */}
