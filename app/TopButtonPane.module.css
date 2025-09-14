@@ -8,11 +8,18 @@
 }
 
 .button {
-    color: white;
     background-color: blue;
     width: 130px;
     height: 30px;
     border-radius: 10px;
+}
+
+.buttonReady {
+    color: white;
+}
+
+.buttonUnready {
+    color: grey;
 }
 
 .selected {

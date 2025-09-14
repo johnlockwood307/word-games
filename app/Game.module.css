@@ -1,0 +1,44 @@
+.countdownDiv {
+    text-align: center;
+    padding-bottom: 5px;
+}
+
+.countdownText {
+    font-size: 32px;
+}
+
+.pointsDiv {
+    text-align: center;
+    padding-bottom: 15px;
+}
+
+.pointsText {
+    font-size: 24px;
+}
+
+.letterDiv {
+    display: flex;
+    flex-direction: column;
+    padding-top: 15px;
+}
+
+.submitButton {
+    background-color: blue;
+    width: 130px;
+    height: 30px;
+    border-radius: 10px;
+    align-self: center;
+}
+
+.buttonReady {
+    color: white;
+}
+
+.buttonUnready {
+    color: grey;
+}
+
+.feedbackDiv {
+    text-align: center;
+    padding-top: 15px;
+}

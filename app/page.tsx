@@ -7,6 +7,7 @@ import TopButtonPane from "./TopButtonPane";
 import HowToPlay from "./HowToPlay";
 import PreGamePane from "./PreGame";
 import GamePane from "./Game";
+import { buildTrie } from "./gameUtils";
 
 export default function Home() {
     const [scoreLeaderboard, setScoreLeaderboard] = useState<Array<LeaderboardDoc>>([]);
@@ -20,6 +21,22 @@ export default function Home() {
 
     const [inGame, setInGame] = useState(false);
 
+    const [trie, setTrie] = useState<any>(null);
+
+
+    // build trie once on startup
+    useEffect(() => {
+        fetch('/collins_scrabble_words.txt')
+            .then((res) => res.text())
+            .then((text) => {
+                const words = text
+                    .split('\n')                                // turns text into array of words
+                    .map((w) => w.trim().toLowerCase())         // removes newlines, makes lower case
+                    .filter(Boolean)                            // removes any falsy values
+                
+                setTrie(buildTrie(words))
+            })
+    }, []);
 
     // fetch leaderboard once on startup, sort into high scores and recent scores
     useEffect(() => {
@@ -50,13 +67,13 @@ export default function Home() {
     return (
     <div className={styles.page}>
         <h1 className={styles.title}>Anagrams</h1>
-        <TopButtonPane panes={panes} curPane={curPane} changePane={changePane} />
+        <TopButtonPane panes={panes} curPane={curPane} changePane={changePane} inGame={inGame}/>
 
         {/* Play pane */}
         <div className={`${styles.playPane} ${styles.body}`} style={{ display: (curPane === "Play") ? "block" : "none" }}>
             <PreGamePane setNickname={setNickname} setValidNickname={setValidNickname}
                 setInGame={setInGame} validNickname={validNickname} inGame={inGame}/>
-            <GamePane inGame={inGame}/>
+            <GamePane inGame={inGame} setInGame={setInGame} endTime={Date.now() + 60000} trie={trie}/>
         </div>
 
         {/* Leaderboard pane */}

@@ -1,24 +1,32 @@
+import { useEffect } from "react";
+
 import styles from "./TopButtonPane.module.css";
 
 type TopButtonPaneProps = {
     panes: Array<string>;
     curPane: string;
-    changePane: any
+    changePane: any;
+    inGame: boolean;
 }
 
 export default function TopButtonPane(props: TopButtonPaneProps) {
-    
+    useEffect(() => {
+        if (props.inGame) {
+            
+        }
+    }, [props.inGame]);
     
     return (
         <div className={styles.buttonPane}>
-            {/* <button className={styles.button}></button>
-            <button className={styles.button}>Leaderboard</button>
-            <button className={styles.button}>How to Play</button> */}
-
             {props.panes.map((pane) => (
                 <button key={pane}
-                    className={`${styles.button} ${props.curPane == pane ? styles.selected : ""}`}
-                    onClick={() => props.changePane(pane)}>
+                    className={`${styles.button} ${props.curPane == pane ? styles.selected : ""}
+                        ${(pane == "Play" || !props.inGame) ? styles.buttonReady : styles.buttonUnready}`}
+                    onClick={() => {
+                        if(!props.inGame) {
+                            props.changePane(pane)
+                        }
+                    }}>
                     {pane}
                 </button>
             ))}

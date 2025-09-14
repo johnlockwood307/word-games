@@ -1,85 +1,159 @@
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useRef } from "react";
+import Countdown from "react-countdown";
 import styles from "./Game.module.css";
+import { wordValid } from "./gameUtils";
 
-// type GameProps = {
-//     inGame: boolean
-// }
+// scores for word of each length
+const scoreMap = new Map([
+    [3, 100],
+    [4, 400],
+    [5, 1200],
+    [6, 2000]
+]);
 
-// type LetterButtonProps = {
-//     index: number;
-//     letter: string;
-// }
-
+function getLetters() {
+    return ["A", "B", "C", "D", "E", "F"];
+}
 
 export default function GamePane(gProps) {
-    const [positions, setPositions] = useState([
-        "translate-x-0 translate-y-24",
-        "translate-x-24 translate-y-24",
-        "translate-x-48 translate-y-24"
-    ]);
-    // const [buttonsActive, setButtonsActive] = useState([false, false]);
+    const buffer = 25;
+    const cellX = 50;
+    const activeY = buffer + 25;
+    const inactiveY = buffer + 100;
+
+    const [letters, setLetters] = useState([]);
+    // get random letters once on startup
+    useEffect(() => {
+        setLetters(getLetters());
+    }, [])
 
     // list of button indices that are active
     const [activeButtons, setActiveButtons] = useState([]);
+    // references to button DOM elements
+    const buttonRefs = useRef([]);
+    // Display feedback (valid / invalid / too short) about entered words
+    const [wordFeedback, setWordFeedback] = useState("Enter some words!");
     
-    const letters = "ABC";
-    const numLetters = letters.length;
+    // Total points earned by submitting words
+    const [totalPoints, setTotalPoints] = useState(0);
+    // Submitted words, used to prevent duplicate entry
+    const [submittedWords, setSubmittedWords] = useState(new Set());
+
+    // gameOver used to stop word submission
+    const [gameOver, setGameOver] = useState(false);
 
 
-    function LetterButton(lbProps) {
-        return (
-            <button onClick={() => handleClick(lbProps.index)}
-                className={`absolute px-4 py-2 bg-blue-500 text-white
-                    rounded-lg transition-all duration-200 ease-in-out
-                    ${positions[lbProps.index]}`}>
-                {lbProps.letter}
-            </button>
-        );
-    }
-
-    function handleClick(index) {
-        // const newButtonsActive = buttonsActive.map((isActive, i) => i == index ? !isActive : isActive);
-        // const newPositions = [];
-        // for (let i = 0; i < numLetters; i++) {
-        //     if (newButtonsActive[i]) {
-        //         // active position. y = 0 for first row. x is variable depending on number of other active buttons.
-        //         if (i == index) {
-        //             // if i == index, i was just clicked and is now active. count # other active and move it accordingly.
-        //             const numActive = newButtonsActive.filter(isActive => isActive).length;
-        //             newPositions.push(`translate-x-${24 * numActive} translate-y-0`);
-        //         } else {
-        //             // otherwise, i was and is still active. keep position the same.
-        //             newPositions.push(positions[i]);
-        //         }
-        //     } else {
-        //         // inactive (default) position. y = 24 for second row. x is variable depending on index
-        //         newPositions.push(`translate-x-${24 * i} translate-y-24`);
-        //     }
-        // }
-        // setPositions(newPositions);
-        // setButtonsActive(newButtonsActive);
-
+    // when letter button is clicked, append to or remove from activeButtons
+    function handleLetterClick(index) {
+        if (gameOver) {
+            return;
+        }
+        
         if (activeButtons.includes(index)) {
             // remove from activeButtons
-            setActiveButtons(prevActiveButtons => prevActiveButtons.filter((_isActive, i) => i !== index))
+            setActiveButtons(prevActiveButtons => prevActiveButtons.filter(isActive => isActive !== index));
         } else {
             // append to activeButtons
             setActiveButtons(prevActiveButtons => [...prevActiveButtons, index]);
         }
     }
 
-    // useEffect with dependency on activeButtons to update positions
-    useEffect(() => {
+    // when submit button is clicked, check if word valid and award points accordingly.
+    function handleSubmit() {
+        if (gameOver) {
+            return;
+        }
         
-    }, [activeButtons]);
+        const word = activeButtons.map((activeButton) => (letters[activeButton]));
+        const wordStr = word.join("");
+        
+        // check if duplicate word
+        if (submittedWords.has(wordStr)) {
+            setWordFeedback(`${wordStr} (Duplicate word)`);
+        } else {
+            if (word.length < 3) {
+                setWordFeedback("Too short! Words must be at least 3 letters");
+            } else {
+                if (wordValid(gProps.trie, word)) {
+                    const newPoints = scoreMap.get(word.length);
+                    setTotalPoints(prev => prev + newPoints);
+                    setSubmittedWords(prev => prev.add(wordStr));
+                    setWordFeedback(`${wordStr} (+${newPoints} points)`);
+                } else {
+                    setWordFeedback(`${wordStr} (Invalid word)`);
+                }
+            }
+        }
+
+        // reset all active letters regardless of validity
+        setActiveButtons([]);
+    }
+
+    // get {x,y} position of a button based on its index (position in original letters) or activeIndex (position in the active zone)
+    function getPosition(index) {
+        const activeIndex = activeButtons.indexOf(index);
+        if(activeIndex >= 0) {
+            // index is active
+            return {x: buffer + cellX * activeIndex, y: activeY};
+        }
+        // index is inactive
+        return {x: buffer + cellX * index, y: inactiveY};
+    }
+
+    // On every render, update button DOM styles
+    letters.forEach((_letter, i) => {
+        const el = buttonRefs.current[i];
+        if (el) {
+            const {x, y} = getPosition(i);
+            el.style.transform = `translate(${x}px, ${y}px)`;
+        }
+    });
 
     return (
         <div style={{ display: (gProps.inGame) ? "block" : "none" }}>
-            <div className="relative w-full h-64 border flex">
-                <LetterButton index={0} letter={letters[0]}/>
-                <LetterButton index={1} letter={letters[1]}/>
-                <LetterButton index={2} letter={letters[2]}/>
+            <div className={styles.countdownDiv}>
+                <Countdown date={gProps.endTime}
+                    onComplete={() => {
+                        setGameOver(true);
+                        setWordFeedback("Nice job!");
+                        setActiveButtons([]);
+                    }}
+                    renderer={({ minutes, seconds, completed }) => {
+                        if (completed) {
+                            return <span className={styles.countdownText}>Time's Up!</span>;
+                        } else {
+                            return <span className={styles.countdownText}>
+                                {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+                            </span>;
+                        }
+                    }}
+                />
+            </div>
+            <div className={styles.pointsDiv}>
+                <span className={styles.pointsText}>Score: {totalPoints}</span>
+            </div>
+            <div className={`relative w-full h-50 border ${styles.letterDiv}`}>
+                <button className={`${styles.submitButton} ${gameOver ? styles.buttonUnready : styles.buttonReady}`}
+                    onClick={handleSubmit}
+                >
+                    Submit
+                </button>
+                
+                {letters.map((letter, i) => (
+                    <button
+                        key={i}
+                        ref={(el) => (buttonRefs.current[i] = el)}
+                        onClick={() => handleLetterClick(i)}
+                        className="absolute px-4 py-2 bg-blue-500 text-white rounded-lg transition-transform duration-150 ease-in-out will-change-transform"
+                        style={{transform: `translate(${buffer + cellX * i}px, ${inactiveY}px)`}}
+                    >
+                        {letter}
+                    </button>
+                ))}
+            </div>
+
+            <div className={styles.feedbackDiv}>
+                {wordFeedback}
             </div>
         </div>
     );
