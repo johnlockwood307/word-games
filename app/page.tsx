@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Head from "next/head";
 import { LeaderboardTable, LeaderboardDoc } from "./LeaderboardTable";
 import styles from "./style/page.module.css";
 import TopButtonPane from "./TopButtonPane";
@@ -10,6 +11,10 @@ import GamePane from "./Game";
 import { buildTrie } from "./gameUtils";
 
 export default function Home() {
+    useEffect(() => {
+        document.title = "Play Anagrams";
+    }, []);
+
     const [scoreLeaderboard, setScoreLeaderboard] = useState<Array<LeaderboardDoc>>([]);
     const [recentLeaderboard, setRecentLeaderboard] = useState<Array<LeaderboardDoc>>([]);
     const [recentLeaderboardEntry, setRecentLeaderboardEntry] = useState<LeaderboardDoc | null>(null);
@@ -69,7 +74,11 @@ export default function Home() {
     }
 
 
-    return (
+    return (<>
+    <Head>
+        <title>Play Anagrams</title>
+    </Head>
+
     <div className={styles.page}>
         <h1 className={styles.title}>Anagrams</h1>
         <TopButtonPane panes={panes} curPane={curPane} changePane={changePane} inGame={inGame}/>
@@ -94,5 +103,5 @@ export default function Home() {
         <div className={`${styles.howToPlayPane} ${styles.body}`} style={{ display: (curPane === "How to Play") ? "block" : "none" }}>
             <HowToPlay/>
         </div>
-    </div>);
+    </div></>);
 }
