@@ -74,11 +74,7 @@ export default function Home() {
     }
 
 
-    return (<>
-    <Head>
-        <title>Play Anagrams</title>
-    </Head>
-
+    return (
     <div className={styles.page}>
         <h1 className={styles.title}>Anagrams</h1>
         <TopButtonPane panes={panes} curPane={curPane} changePane={changePane} inGame={inGame}/>
@@ -103,5 +99,6 @@ export default function Home() {
         <div className={`${styles.howToPlayPane} ${styles.body}`} style={{ display: (curPane === "How to Play") ? "block" : "none" }}>
             <HowToPlay/>
         </div>
-    </div></>);
+    </div>
+    );
 }
