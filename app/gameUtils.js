@@ -81,7 +81,6 @@ const vowelFreqMap = new Map([
     ['I', 9],
     ['O', 8],
     ['U', 4],
-    ['Y', 2],
 ]);
 
 const consonantFreqMap = new Map([
@@ -100,6 +99,7 @@ const consonantFreqMap = new Map([
     ['P', 2],
     ['V', 2],
     ['W', 2],
+    ['Y', 2],
     ['J', 1],
     ['K', 1],
     ['Q', 1],
