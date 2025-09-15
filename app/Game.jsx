@@ -66,18 +66,35 @@ export default function GamePane(gProps) {
         useEffect(() => {
             const handleKeyDown = (e) => {
                 if (gProps.inGame && !gameOver) {
-                    const key = e.key;
+                    const key = e.key.toUpperCase();
                     
-                    if (key == "Enter" || key == " ") {
+                    if (key == "ENTER" || key == " ") {
                         e.preventDefault();
                         handleSubmit();
-                    } else if (key == "Backspace") {
+                    } else if (key == "BACKSPACE") {
                         if (activeButtons.length > 0) {
                             setActiveButtons(prevActiveButtons => prevActiveButtons.slice(0, -1));
                         }
-                    } else if (letters.includes(key.toUpperCase())) {
-                        // duplicate letters pose a problem
-                        handleLetterClick(letters.indexOf(key.toUpperCase()));
+                    } else if (letters.includes(key)) {
+                        // handleLetterClick(letters.indexOf(key));
+
+                        // choose first appearance in the inactive list. If none such inactive, choose first appearance in the active list.
+                        const activePairs = activeButtons.map(index => [letters[index], index]);
+                        const inactivePairs = letters.map((letter, index) => [letter, index]).filter(pair => !activeButtons.includes(pair[1]));
+                        
+                        for (const inactivePair of inactivePairs) {
+                            if (key == inactivePair[0]) {
+                                handleLetterClick(inactivePair[1]);
+                                return;
+                            }
+                        }
+
+                        for (const activePair of activePairs) {
+                            if (key == activePair[0]) {
+                                handleLetterClick(activePair[1]);
+                                return;
+                            }
+                        }
                     }
                 }
             }
@@ -227,7 +244,7 @@ export default function GamePane(gProps) {
                         key={i}
                         ref={(el) => (buttonRefs.current[i] = el)}
                         onClick={() => handleLetterClick(i)}
-                        className="absolute w-11 h-10 bg-blue-500 text-white rounded-lg transition-transform duration-150 ease-in-out will-change-transform"
+                        className="absolute w-11 h-10 bg-blue-800 text-white rounded-lg transition-transform duration-150 ease-in-out will-change-transform"
                         style={{transform: `translate(${buffer + cellX * i}px, ${inactiveY}px)`}}
                         type="button"
                     >

@@ -7,9 +7,15 @@ export default function HowToPlay() {
         </p>
         <br/>
         <p>
-            Click letters in the sequence you want and they will be moved to the staging area.
-            Click a letter to remove it from the staging area, or click reset to remove all letters.
-            Click submit to enter a word.
+            Click letter buttons in the sequence you want and they will be moved to the staging area.
+            Click a letter to remove it from the staging area.
+            Click the submit button to enter a word.
+        </p>
+        <br/>
+        <p>
+            You can also use keyboard input. Press a letter's key to move it to and from the staging area.
+            Press backspace to remove the last active letter.
+            Press enter or space to enter a word.
         </p>
         <br/>
         <p>Inspired by GamePigeon.</p>
