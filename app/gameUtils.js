@@ -79,8 +79,8 @@ export function wordValid(trie, word) {
  * Get letters from a valid 6 letter word.
  */
 export function getLetters(sixLetterWords) {
-    console.log(sixLetterWords);
     const randomIndex = Math.floor(Math.random() * sixLetterWords.length);
     const word = sixLetterWords[randomIndex].toUpperCase();
+    console.log(`getLetters word: ${word}`)
     return _.shuffle(word.split(''));
 }
