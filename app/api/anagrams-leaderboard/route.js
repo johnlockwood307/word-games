@@ -41,7 +41,7 @@ export async function POST(request) {
         const body = await request.json();
 
         if (!body || typeof body !== "object" || !body.nickname || !body.score || !body.letters
-            || !body.timestamp || body.nickname.length < 3 || body.letters.length != 6
+            || !body.timestamp || body.nickname.length < 1 || body.nickname.length > 3 || body.letters.length != 6
         ) {
             return new Response(
                 JSON.stringify({ success: false, error: "Invalid request body" }), {
