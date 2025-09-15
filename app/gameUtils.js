@@ -75,58 +75,12 @@ export function wordValid(trie, word) {
 }
 
 
-const vowelFreqMap = new Map([
-    ['E', 12],
-    ['A', 9],
-    ['I', 9],
-    ['O', 8],
-    ['U', 4],
-]);
-
-const consonantFreqMap = new Map([
-    ['N', 6],
-    ['R', 6],
-    ['T', 6],
-    ['D', 4],
-    ['L', 4],
-    ['S', 4],
-    ['G', 3],
-    ['B', 2],
-    ['C', 2],
-    ['F', 2],
-    ['H', 2],
-    ['M', 2],
-    ['P', 2],
-    ['V', 2],
-    ['W', 2],
-    ['Y', 2],
-    ['J', 1],
-    ['K', 1],
-    ['Q', 1],
-    ['X', 1],
-    ['Z', 1],
-]);
-
 /**
- * Randomly returns two vowels and four consonants, chosen without replacement with the frequencies above, shuffled.
+ * Get letters from a valid 6 letter word.
  */
-export function getLetters() {
-    let vowelBag = [];
-    for (const [letter, count] of vowelFreqMap) {
-        const newLetters = new Array(count).fill(letter);
-        vowelBag.push(...newLetters);
-    }
-    vowelBag = _.shuffle(vowelBag);
-    
-    let consonantBag = [];
-    for (const [letter, count] of consonantFreqMap) {
-        const newLetters = new Array(count).fill(letter);
-        consonantBag.push(...newLetters);
-    }
-    consonantBag = _.shuffle(consonantBag);
-    
-    let result = [];
-    result.push(...vowelBag.slice(0, 2));
-    result.push(...consonantBag.slice(0, 4));
-    return _.shuffle(result);
+export function getLetters(sixLetterWords) {
+    console.log(sixLetterWords);
+    const randomIndex = Math.floor(Math.random() * sixLetterWords.length);
+    const word = sixLetterWords[randomIndex].toUpperCase();
+    return _.shuffle(word.split(''));
 }

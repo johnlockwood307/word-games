@@ -36,8 +36,13 @@ export default function GamePane(gProps) {
     const [countdownKey, setCountdownKey] = useState(0);
     useEffect(() => {
         setCountdownKey(gProps.gameCount);
-        setLetters(getLetters());
-    }, [gProps.gameCount]);
+
+        if (gProps.sixLetterWords.length > 0) {
+            setLetters(getLetters(gProps.sixLetterWords));
+        } else {
+            setLetters(["A", "A", "A", "A", "A", "A"]);
+        }
+    }, [gProps.gameCount, gProps.sixLetterWords]);
 
     function resetGame() {
         setGameOver(false);

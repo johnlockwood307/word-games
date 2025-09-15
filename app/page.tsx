@@ -29,6 +29,7 @@ export default function Home() {
     const [gameCount, setGameCount] = useState<number>(0);
 
     const [trie, setTrie] = useState<any>(null);
+    const [sixLetterWords, setSixLetterWords] = useState<Array<string>>([]);
 
 
     // build trie once on startup
@@ -42,6 +43,8 @@ export default function Home() {
                     .filter(Boolean)                            // removes any falsy values
                 
                 setTrie(buildTrie(words))
+                const letterSources = words.filter((w) => w.length == 6);
+                setSixLetterWords(letterSources);
             })
     }, []);
 
@@ -84,7 +87,8 @@ export default function Home() {
             <PreGamePane setNickname={setNickname} setValidNickname={setValidNickname}
                 setInGame={setInGame} validNickname={validNickname} inGame={inGame} setGameCount={setGameCount}/>
             <GamePane inGame={inGame} setInGame={setInGame} endTime={Date.now() + 60000}
-                trie={trie} gameCount={gameCount} nickname={nickname} setRecentLeaderboardEntry={setRecentLeaderboardEntry}/>
+                trie={trie} sixLetterWords={sixLetterWords} gameCount={gameCount} nickname={nickname}
+                setRecentLeaderboardEntry={setRecentLeaderboardEntry}/>
         </div>
 
         {/* Leaderboard pane */}
