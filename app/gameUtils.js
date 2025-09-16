@@ -81,6 +81,6 @@ export function wordValid(trie, word) {
 export function getLetters(sixLetterWords) {
     const randomIndex = Math.floor(Math.random() * sixLetterWords.length);
     const word = sixLetterWords[randomIndex].toUpperCase();
-    console.log(`getLetters word: ${word}`)
+    //console.log(`getLetters word: ${word}`)
     return _.shuffle(word.split(''));
 }
