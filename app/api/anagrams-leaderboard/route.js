@@ -1,5 +1,3 @@
-// import { addDoc, collection, getDocs } from "firebase/firestore";
-// import { db } from "../util/FirebaseInit.js";
 import { db } from "../util/firebaseAdmin.js";
 
 
@@ -7,14 +5,12 @@ export async function GET() {
     try {
         console.log("getting anagrams leaderboard entries");
         
-        // const collectionRef = collection(db, "anagrams-leaderboard");
-        // const collectionSnap = await getDocs(collectionRef)
         const collectionRef = db.collection("anagrams-leaderboard");
         const collectionSnap = await collectionRef.get();
-        const docs = []
+        const docs = [];
         
         collectionSnap.forEach((doc) => {
-            docs.push(doc.data())
+            docs.push(doc.data());
         })
 
         return new Response(
@@ -40,7 +36,6 @@ export async function POST(request) {
     try {
         console.log("posting anagrams leaderboard entry");
 
-        // const collectionRef = collection(db, "anagrams-leaderboard");
         const collectionRef = db.collection("anagrams-leaderboard");
         const body = await request.json();
 
@@ -54,7 +49,6 @@ export async function POST(request) {
                 }
             );
         }
-        // const docRef = await addDoc(collectionRef, body);
         const docRef = await collectionRef.add(body);
 
         return new Response(
