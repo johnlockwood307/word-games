@@ -1,5 +1,6 @@
 import { addDoc, collection, getDocs } from "firebase/firestore";
-import { db } from "../util/FirebaseInit.js";
+// import { db } from "../util/FirebaseInit.js";
+import { db } from "../util/firebaseAdmin.js";
 
 
 export async function GET() {
